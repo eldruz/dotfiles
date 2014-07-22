@@ -1,0 +1,58 @@
+### ---- GENERAL CONF ---- ###
+
+#bookmark-cmd
+confirm-exit yes
+cleanup-on-quit yes
+download-full-page yes
+error-log "~/.newsbeuter/error.log"
+http-auth-method anysafe
+save-path "~/Dropbox/SavedArticles"
+
+### ---- FORMAT ---- ###
+
+#articlelist-format <format>
+datetime-format %x # preferred locale version, without the time
+#feedlist-format
+
+### ---- USER INTERFACE ---- ###
+
+display-article-progress yes
+show-keymap-hint yes
+
+### ---- COLORS ---- ###
+
+color background          default   default
+color listnormal          default   default
+color listfocus           black     yellow
+color listfocus_unread    black     yellow
+color info                default   black
+color article             default   default
+
+highlight article "^(Title):.*$" blue default
+highlight article "https?://[^ ]+" red default
+highlight article "\\[image\\ [0-9]+\\]" green default
+
+#highlight
+#search-highlight-colors
+
+### ---- HTML & RENDER ---- ###
+
+browser "2>/dev/null 1>&2 uzbl-browser --uri %u &"
+external-url-viewer "urlscan"
+html-renderer "elinks --dump"
+
+### ---- FEED & ARTICLE ---- ###
+
+article-sort-order date
+feed-sort-order firsttag
+goto-first-unread yes
+goto-next-feed yes
+max-items 0
+
+### ---- KEY BINDINGS ---- ###
+
+unbind-key j
+unbind-key k
+bind-key j down
+bind-key k up
+

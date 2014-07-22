@@ -1,0 +1,5 @@
+cache=8192
+cache-min=10
+monitoraspect=16:9
+af=volnorm
+

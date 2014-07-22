@@ -1,0 +1,106 @@
+execute pathogen#infect()
+set nocompatible   " Disable vi-compatibility
+set laststatus=2   " Always show the statusline
+set encoding=utf-8 " Necessary to show Unicode glyphs
+set t_Co=256 
+
+" Options diverses pour l'affichage
+set guioptions-=T
+syntax enable
+set background=dark
+colorscheme solarized
+set mouse=a
+set nu
+syntax on
+filetype indent on
+set autoindent
+set hlsearch
+" Formating options
+set tw=72
+" Ctrl-i clears the highlight from the last search
+noremap <C-i> :nohlsearch<CR>
+" Gestion de la taille des tabs
+set tabstop=2
+set shiftwidth=2
+set expandtab
+" Raccourcis
+:nmap \l :setlocal number!<CR>
+:nmap \o :set paste!<CR>
+" Comportement des touches de navigation j et k
+:nmap j gj
+:nmap k gk
+" Command line remaps
+:cnoremap <C-a>  <Home>
+:cnoremap <C-b>  <Left>
+:cnoremap <C-f>  <Right>
+:cnoremap <C-d>  <Delete>
+:cnoremap <M-b>  <S-Left>
+:cnoremap <M-f>  <S-Right>
+:cnoremap <M-d>  <S-right><Delete>
+:cnoremap <Esc>b <S-Left>
+:cnoremap <Esc>f <S-Right>
+:cnoremap <Esc>d <S-right><Delete>
+:cnoremap <C-g>  <C-c>
+" Search text utilities
+:set incsearch
+:set ignorecase
+:set smartcase
+:set hlsearch
+" Switch to previous buffer
+:nmap <C-e> :e#<CR>
+" Switch between buffers
+:nmap <C-n> :bnext<CR>
+:nmap <C-p> :bprev<CR>
+
+" ==========================================================
+" VIM-AIRLINE
+" ==========================================================
+let g:airline#extensions#tabline#enabled = 1
+
+" ==========================================================
+" CTRL-P
+" ==========================================================
+:nmap , :CtrlP<CR>
+:nmap ; :CtrlPBuffer<CR>
+:let g:ctrlp_map = '<Leader>t'
+:let g:ctrlp_match_window_bottom = 1
+:let g:ctrlp_match_window_reversed = 0
+:let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|blend)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])|__init__\.py'
+:let g:ctrlp_working_path_mode = 'ra'
+:let g:ctrlp_dotfiles = 0
+:let g:ctrlp_switch_buffer = 0
+
+" ==========================================================
+" SYNTASTIC
+" ==========================================================
+" Haskell -- uses ghcmod
+let g:syntastic_haskell_checkers = ['ghc_mod']
+" Python -- uses pyflakes
+"let g:syntastic_python_checkers=['pyflakes']
+" HTML -- w3 validator
+" let g:syntastic_html_checker=['w3']
+
+" closetag options
+" let g:closetag_html_style=1
+
+" ==========================================================
+" HASKELL
+" ==========================================================
+:filetype plugin on
+:nmap <C-K> :GhcModType<CR>
+:nmap <C-L> :GhcModTypeClear<CR>
+
+" haskellmode-vim
+au BufEnter *.hs compiler ghc
+:let g:haddock_browser="/usr/bin/firefox"
+
+" Autocompletion let g:ycm_semantic_triggers = {'haskell' : ['.']}
+
+" ==========================================================
+" GOYO - DISTRACTION FREE PLUGIN
+" ==========================================================
+" Map Goyo toggle to <Leader> + spacebar
+nnoremap <Leader><Space> :Goyo<CR>
+:let g:goyo_margin_top = 3
+:let g:goyo_margin_bottom = 3
+
