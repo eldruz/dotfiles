@@ -73,6 +73,7 @@ set download_handler    = sync_spawn @scripts_dir/download.sh
 @on_event   LOAD_COMMIT    js uzbl = {};
 @on_event   LOAD_COMMIT    script @scripts_dir/formfiller.js
 @on_event   LOAD_COMMIT    script @scripts_dir/follow.js
+set javascript_windows = 1
 
 # Userscripts/per-site-settings. See the script and the example configuration for details
 #@on_event   LOAD_COMMIT    spawn @scripts_dir/per-site-settings.py @data_home/uzbl/per-site-settings
@@ -476,10 +477,9 @@ sync_spawn_exec @scripts_dir/load_cookies.sh @data_home/uzbl/session-cookies.txt
 # Set the "home" page.
 set uri = uzbl.org/doesitwork/@COMMIT
 
-# Configuration for proxy - squid
 # set proxy_url = http://127.0.0.1:8123
 
-# vim: set fdm=syntax:
-
-# === Misc custom commands
+# === Misc custom commands ===================================================
 @bind xurl = sh 'wget -O - "http://tinyurl.com/api-create.php?url=\@uri" | xclip'
+
+# vim: set fdm=syntax:
