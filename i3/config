@@ -164,6 +164,7 @@ bindsym $mod+u exec uzbl-browser
 bindsym $mod+i exec --no-startup-id xterm -e newsbeuter
 bindsym $mod+o exec --no-startup-id xterm -e ranger
 bindsym $mod+p exec --no-startup-id xterm -e cmus
+bindsym $mod+y exec --no-startup-id scrot '%Y-%m-%d_$wx$h.png' -e 'mv $f ~/Screenshots/'
 
 # Load wallpaper at startup
 exec feh --no-fehbg --bg-fill ~/Dropbox/Images/wallpaper/tree.jpg
