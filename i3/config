@@ -160,7 +160,7 @@ bar {
 }
 
 # Shortcuts to launch commonly used applications
-bindsym $mod+u exec firefox
+bindsym $mod+u exec uzbl-browser
 bindsym $mod+i exec --no-startup-id xterm -e newsbeuter
 bindsym $mod+o exec --no-startup-id xterm -e ranger
 bindsym $mod+p exec --no-startup-id xterm -e cmus
