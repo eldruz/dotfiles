@@ -167,7 +167,7 @@ bindsym $mod+p exec --no-startup-id i3-sensible-terminal -e cmus
 bindsym $mod+y exec --no-startup-id scrot '%Y-%m-%d_$wx$h.png' -e 'mv $f ~/Screenshots/'
 
 # Load wallpaper at startup
-exec feh --no-fehbg --bg-fill ~/Dropbox/Images/wallpaper/tree.jpg
+exec feh --no-fehbg --bg-fill ~/wallpaper.jpg
 
 # Uzbl behavior
 for_window [class="Uzbl-core"] focus child, layout tabbed, focus
