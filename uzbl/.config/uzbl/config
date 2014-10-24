@@ -87,7 +87,7 @@ set javascript_windows = 1
 # Switch to command mode if anything else is clicked
 @on_event   ROOT_ACTIVE    @set_mode command
 # Switch to insert mode when javascript focuses text element
-# @on_event LOAD_FINISH sh 'if [ "\@<document.activeElement.type>\@" = "text" ]; then echo "event FORM_ACTIVE" > $4; fi'
+@on_event LOAD_FINISH sh 'if [ "\@<document.activeElement.type>\@" = "text" ]; then echo "event FORM_ACTIVE" > $4; fi'
 
 # Example CONFIG_CHANGED event handler
 #@on_event  CONFIG_CHANGED print Config changed: %1 = %2
