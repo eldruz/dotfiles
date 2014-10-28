@@ -1,1 +1,7 @@
+*.swp
+# Log file for i3
 i3log
+# No need to track vim plugins that Vundle handles
+vim/.vim/bundle/
+# except Vundle of course, which is added as a submodule
+!vim/.vim/bundle/Vundle.vim
