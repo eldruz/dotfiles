@@ -19,4 +19,10 @@ for every configuration files you want to use. GNU stow takes care of generating
 
 and GNU stow will create the ~/.vim and ~/.vimrc symlinks.
 
+To process all directories at once, you can always just call
+
+    stow -v2 $(echo */)
+
+with the `-v2` option to provide a bit more verbosity.
+
 For a more advanced usage of GNU stow you should probably dig in the man pages.
