@@ -7,9 +7,11 @@ The steps to get it working are: ::
 
     cd $HOME
     git clone https://github.com/eldruz/dotfiles.git dotfiles
+    git submodule init
+    git submodule update
     cd dotfiles
 
-And then from here, you basically run:
+The submodules lines are here to initialize [Vundle.vim](https://github.com/gmarik/Vundle.vim). And then from here, you basically run:
 
     stow software_name
 
