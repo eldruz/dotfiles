@@ -5,3 +5,7 @@ i3log
 vim/.vim/bundle/
 # except Vundle of course, which is added as a submodule
 !vim/.vim/bundle/Vundle.vim
+# some vimprobable files that does not need to be saved
+vimprobable/.config/vimprobable/history
+vimprobable/.config/vimprobable/closed
+vimprobable/.config/vimprobable/cookies
