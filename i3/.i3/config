@@ -161,9 +161,12 @@ bar {
 
 # Shortcuts to launch commonly used applications
 bindsym $mod+u exec luakit
+bindsym $mod+shift+u exec vimprobable2
 bindsym $mod+i exec --no-startup-id i3-sensible-terminal -e newsbeuter
+bindsym $mod+shift+i exec --no-startup-id i3-sensible-terminal -e podbeuter
 bindsym $mod+o exec --no-startup-id i3-sensible-terminal -e ranger
-bindsym $mod+p exec --no-startup-id i3-sensible-terminal -e cmus
+bindsym $mod+shift+o exec --no-startup-id i3-sensible-terminal -e cmus
+bindsym $mod+p exec thunderbird 
 bindsym $mod+y exec --no-startup-id scrot '%Y-%m-%d_$wx$h.png' -e 'mv $f ~/Screenshots/'
 
 # Load wallpaper at startup
@@ -176,4 +179,4 @@ for_window [class="Uzbl-core"] focus child, layout tabbed, focus
 workspace_layout tabbed
 
 # Load emacs daemon
-exec emacs --daemon
+# exec emacs --daemon
