@@ -80,6 +80,8 @@ export TERMINAL=st
 alias v="vim"
 alias hs="cd ~/.Hstone/drive_c/Program\ Files/Hearthstone && env WINEPREFIX=/home/eldruz/.Hstone wine Hearthstone.exe"
 alias git=hub
+alias django='python manage.py'
+alias ducks='du -hsx * | sort -rh | head'
 # Example aliases
 alias zshconfig="vim ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
