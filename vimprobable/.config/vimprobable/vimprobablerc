@@ -7,8 +7,10 @@ set statusfont=Inconsolata for Powerline:size=16
 set monofont=Ubuntu Mono derivative Powerline
 set fontsize=16
 set monofontsize=14
-set minimumfontsize=13
+set minimumfontsize=12
 
 set homepage=https://bbs.archlinux.org/
-set downloadspath=$HOME/Downloads
+set downloadspath=/home/eldruz/Downloads
 set scrollbars=false
+
+set proxy=true
