@@ -19,20 +19,24 @@ Plugin 'Valloric/YouCompleteMe'           " need to be compiled to work
 Plugin 'klen/python-mode'
 Plugin 'Raimondi/delimitMate'
 Plugin 'scrooloose/syntastic'
+Plugin 'scrooloose/nerdtree'
 " Plugin 'TaskList'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'bling/vim-airline'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'tpope/vim-commentary'
 Plugin 'junegunn/vim-easy-align'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'Shougo/vimproc.vim'               " compilation needed
+Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-unimpaired'
 Plugin 'jmcantrell/vim-virtualenv'
 Plugin 'heavenshell/vim-pydocstring'
+Plugin 'vim-ruby/vim-ruby'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -50,7 +54,6 @@ set mouse=a                           " Mouse support
 " Options diverses pour l'affichage
 syntax enable
 set background=dark
-set mouse=a
 set nu
 syntax on
 set autoindent
@@ -70,7 +73,6 @@ if has("wildmenu")
   set wildignore+=.DS_Store,.git,.hg,.svn
   set wildignore+=*~,*.swp,*.tmp
   set wildmenu
-  set wildmode=list,longest
 endif
 
 " ==========================================================
@@ -102,10 +104,18 @@ nmap <C-e> :e#<CR>
 " Switch between buffers
 nmap <C-n> :bnext!<CR>
 nmap <C-p> :bprev!<CR>
+" Switch between windows
 map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 map <C-h> <C-w>h
+" Vim-unimpaired remaps
+nmap < [
+nmap > ]
+omap < [
+omap > ]
+xmap < [
+xmap > ]
 
 " ==========================================================
 " GUI OPTIONS
@@ -115,12 +125,6 @@ set guioptions-=T  "remove toolbar
 set guioptions-=r  "remove right-hand scroll bar
 set guioptions-=L  "remove left-hand scroll bar
 set guifont=Meslo\ LG\ S\ for\ Powerline\ 12
-
-" ==========================================================
-" PATHOGEN
-" ==========================================================
-" execute pathogen#infect()
-" execute pathogen#helptags()
 
 " ==========================================================
 " COLOR-SCHEME
@@ -156,21 +160,28 @@ let g:airline_symbols.whitespace = 'Ξ'
 " ==========================================================
 " CTRLP
 " ==========================================================
-" :nmap , :CtrlP<CR>
 nmap <Leader>b :CtrlPBuffer<CR>
-nmap <Leader>B :CtrlPMRU<CR>
+nmap <Leader>B :CtrlP<CR>
+nmap <Leader>t :CtrlPTag<CR>
+nmap <Leader>m :CtrlPMixed<CR>
 let g:ctrlp_map = '<Leader>t'
-let g:ctrlp_regexp = 1
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:10'
+let g:ctrlp_regexp = 0
+let g:ctrlp_match_window = 'top,order:ttb,min:1,max:15,results:10'
 let g:ctrlp_switch_buffer = 'Et'
 let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|blend)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])|__init__\.py'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_dotfiles = 0
-let g:ctrlp_lazy_update = 1
+let g:ctrlp_working_path_mode = 'rc'
+let g:ctrlp_show_hidden = 0
+let g:ctrlp_lazy_update = 0
 let g:ctrlp_switch_buffer = 0
-" Tag Mode
-let g:ctrlp_extensions = ['tag']
-nmap <Leader>T :CtrlPTag<CR>
+let g:ctrlp_extensions = ['tag', 'mixed']
+
+" ==========================================================
+" NERDTREE
+" ==========================================================
+nmap <Leader>e :NERDTreeToggle<CR>
+" Start NerdTree if no files were specified on open
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 " ==========================================================
 " SYNTASTIC
@@ -218,7 +229,11 @@ let g:UltiSnipsListSnippets="<c-e>"
 " and close the selection list, same as other IDEs.
 " CONFLICT with some plugins like tpope/Endwise
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-"
+
+" ==========================================================
+" RUBY
+" ==========================================================
+
 " ==========================================================
 " HASKELL
 " ==========================================================
@@ -239,8 +254,8 @@ let g:pymode_syntax_all = 1
 let g:pymode_syntax_indent_errors = g:pymode_syntax_all
 let g:pymode_syntax_space_errors = g:pymode_syntax_all
 " code checking
-let g:pymode_lint = 0
-let g:pymode_lint_on_write = 0
+let g:pymode_lint = 1
+let g:pymode_lint_on_write = 1
 let g:pymode_breakpoint = 0
 
 " ==========================================================
