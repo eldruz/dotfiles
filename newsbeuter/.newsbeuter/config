@@ -37,8 +37,8 @@ highlight article "\\[image\\ [0-9]+\\]" green default
 
 ### ---- HTML & RENDER ---- ###
 
-browser "2>/dev/null 1>&2 luakit -u %u &"
-external-url-viewer "urlscan"
+browser "2>/dev/null 1>&2 vimprobable2 %u &"
+# external-url-viewer "urlscan"
 html-renderer "elinks --dump"
 
 ### ---- FEED & ARTICLE ---- ###
@@ -56,3 +56,9 @@ unbind-key k
 bind-key j down
 bind-key k up
 
+### ---- MACROS ---- ###
+macro e set browser "echo %u >> ~/.newsbeuter/queue" ; open-in-browser ; set browser "2>/dev/null 1>&2 vimprobable2 %u &"
+
+### ---- PODBEUTER ---- ###
+download-path "/mnt/freebox/Musiques/Podcast/%n"
+player "mplayer"
