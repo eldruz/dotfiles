@@ -51,16 +51,16 @@ soup.accept_policy = cookie_policy.no_third_party
 -- it to avoid collisions with lua's string.format characters.
 -- See: http://www.lua.org/manual/5.1/manual.html#pdf-string.format
 search_engines = {
-    duckduckgo  = "https://duckduckgo.com/?q=%s",
-    github      = "https://github.com/search?q=%s",
-    google      = "https://google.com/search?q=%s",
-    imdb        = "http://www.imdb.com/find?s=all&q=%s",
-    wikipedia   = "https://en.wikipedia.org/wiki/Special:Search?search=%s",
-    awiki = io.popen("surfraw -print archwiki %s"):read("*a"),
+    ddg       = "https://duckduckgo.com/?q=%s",
+    ghub      = "https://github.com/search?q=%s",
+    google    = "https://google.com/search?q=%s",
+    imdb      = "http://www.imdb.com/find?s=all&q=%s",
+    wikipedia = "https://en.wikipedia.org/wiki/Special:Search?search=%s",
+    awiki     = io.popen("surfraw -print archwiki %s"):read("*a"),
 }
 
 -- Set google as fallback search engine
-search_engines.default = search_engines.google
+search_engines.default = search_engines.ddg 
 -- Use this instead to disable auto-searching
 --search_engines.default = "%s"
 
