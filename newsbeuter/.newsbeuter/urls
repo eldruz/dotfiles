@@ -1,22 +1,20 @@
 http://www.themarysue.com/feed/ Regulier Geek
 http://shoryuken.com/feed/ Regulier Gaming
-http://feeds.gawker.com/lifehacker/full Occasionnel Trivia
 http://feeds.feedburner.com/FutilityCloset Regulier Trivia
 http://www.scienceforthepeople.ca/episodes/rss-feed Rare Podcast Science
-https://www.archlinux.org/feeds/news/ Regulier Linux
 http://www.psyetgeek.com/feed Occasionnel Gaming Social
 http://indiestatik.com/feed/ Regulier Gaming Indie
 http://typecast.com/feeds/news?AD1af720303f8c9e4c977b92d73df9406ec40a8720 Regulier Typographie
 http://www.mhfreq.org/feed Regulier Gaming Feminisme
 http://odditie-s.tumblr.com/rss Regulier Gaming Indie
 http://feeds.feedburner.com/crepegeorgette Regulier Social
-https://news.ycombinator.com/rss Regulier Geek
+https://news.ycombinator.com/rss Rare Geek
 http://feeds.feedburner.com/RockPaperShotgun Regulier Gaming
 http://www.polygon.com/rss/index.xml Regulier Gaming
-http://allodoxia.blog.lemonde.fr/feed/ Occasionnel Science Vulgarisation
+http://allodoxia.blog.lemonde.fr/feed/ Regulier Science Vulgarisation
 http://reflexivites.hypotheses.org/feed Regulier Social Blog
 http://blog.brendanvance.com/feed/ Regulier Gaming Blog
-http://curnblog.com/feed/ Regulier Cinema Blog
+http://curnblog.com/feed/ Occasionnel Cinema Blog
 http://flowingdata.com/feed/ Regulier Blog Data Science Geek
 http://feeds.newscientist.com/science-news Regulier Science
 http://feeds.newscientist.com/letters Occasionnel Science
@@ -24,9 +22,12 @@ http://www.framablog.org/index.php/feed/atom Regulier Geek
 https://hacks.mozilla.org/feed/ Regulier Dev
 http://www.eco-bretons.info/rss.xml Regulier
 https://www.djangoproject.com/rss/community/blogs/ Regulier Dev
-https://www.djangoproject.com/rss/community/q-and-a/ Regulier Dev
+https://www.djangoproject.com/rss/community/q-and-a/ Occasionnel Dev
 http://www.april.org/fr/rss.xml Regulier Libre
-http://feeds.feedburner.com/SkepticallySpeaking Regulier Podcast
+http://feeds.feedburner.com/SkepticallySpeaking Occasionnel Podcast
 http://freegamer.blogspot.com/feeds/posts/default Regulier Gaming Linux Libre
 http://feeds.twit.tv/floss.xml Regulier Podcast
-http://feeds.twit.tv/code.xml
+http://feeds.twit.tv/code.xml Occasionnel Dev
+https://feeds.feedburner.com/urbanews/mag Regulier Infos
+https://theintercept.com/feed/?rss Regulier Infos
+http://the-toast.net/feed/ Regulier
