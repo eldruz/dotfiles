@@ -129,7 +129,7 @@ set guifont=Meslo\ LG\ S\ for\ Powerline\ 12
 " ==========================================================
 " COLOR-SCHEME
 " ==========================================================
-colorscheme solarized
+" colorscheme solarized
 
 " ==========================================================
 " VIM-AIRLINE
@@ -202,9 +202,9 @@ let g:syntastic_haskell_checkers = ['ghc_mod']
 let g:UltiSnipsUsePythonVersion = 2
 let g:UltiSnipsEditSplit="vertical"
 " Trigger configuration.
-" let g:UltiSnipsExpandTrigger="<C-TAB>"
-" let g:UltiSnipsJumpForwardTrigger="<C-TAB>"
-" let g:UltiSnipsJumpBackwardTrigger="<C-S-TAB>"
+let g:UltiSnipsExpandTrigger="<C-TAB>"
+let g:UltiSnipsJumpForwardTrigger="<C-TAB>"
+let g:UltiSnipsJumpBackwardTrigger="<C-S-TAB>"
 " Allow UltiSnip and YouCompleteMe to play nicely together
 function! g:UltiSnips_Complete()
     call UltiSnips#ExpandSnippet()
