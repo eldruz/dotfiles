@@ -1,0 +1,724 @@
+#+STARTUP:  overview
+
+* Interface
+
+** general
+
+   #+begin_src emacs-lisp
+    (setq visible-bell t)
+    (setq inhibit-startup-message t)
+    (tool-bar-mode -1)
+    (global-hl-line-mode t)
+
+    ;;(fset 'yes-or-no-p 'y-or-no-p)
+
+    (global-set-key (kbd "<f5>") 'revert-buffer)
+
+    (defalias 'list-buffers 'ibuffer)
+
+    (setq initial-scratch-message "")
+    (setq initial-major-mode 'emacs-lisp-mode)
+
+    ;; Indent with spaces by default
+    (setq-default indent-tabs-mode nil)
+
+    (setq disabled-command-function nil)
+
+    (setq recentf-save-file "~/.emacs.d/.recentf"
+	  recentf-max-saved-items 50)
+   #+end_src
+
+** font
+
+   #+begin_src emacs-lisp
+     (add-to-list 'default-frame-alist
+		    '(font . "Inconsolata for Powerline-12")
+		    '(font . "Source Code Pro-12"))
+
+     (defun asl/set-font (font-name)
+       (set-face-attribute 'default nil :font font-name)
+       (set-frame-font font-name nil t))
+
+     (asl/set-font "Source Code Pro-12")
+   #+end_src
+  
+** themes
+
+   #+begin_src emacs-lisp
+     (use-package solarized-theme
+       :init
+       (setq solarized-scale-org-headlines nil)
+       (setq solarized-high-contrast-mode-line t)
+       (setq x-underline-at-descent-line t))
+
+     (use-package zenburn-theme)
+
+     (use-package spacemacs-theme)
+
+     (load-theme 'spacemacs-dark t)
+   #+end_src
+
+** modeline
+
+   #+begin_src emacs-lisp
+     (use-package powerline
+       :ensure t
+       :config
+       (powerline-default-theme))
+   #+end_src
+
+** ace-window
+
+   #+begin_src emacs-lisp
+     (use-package ace-window
+       :ensure t
+       :init
+       (global-set-key [remap other-window] 'ace-window)
+       (custom-set-faces
+        '(aw-leading-char-face
+          ((t (:inherit ace-jump-face-foreground :height 3.0))))))
+   #+end_src
+
+** which-key
+
+   #+begin_src emacs-lisp
+     (use-package which-key
+       :ensure t
+       :init
+       (setq which-key-enable-extended-define-key t)
+       :config
+       (which-key-mode))
+   #+end_src
+  
+** hydra
+
+#+begin_src emacs-lisp
+  (use-package hydra
+    :ensure t)
+
+  (with-eval-after-load 'hydra
+   (defhydra hydra-zoom ()
+     "zoom"
+     ("g" text-scale-increase "in")
+     ("l" text-scale-decrease "out"))
+   )
+#+end_src
+
+* General
+
+** custom functions
+
+*** DONE indent a whole buffer
+    
+    #+begin_src emacs-lisp
+     (defun asl/indent-buffer ()
+       (interactive)
+       (indent-region (point-min) (point-max)))
+    #+end_src
+    
+*** org-repair-property-drawer
+
+    #+begin_src emacs-lisp
+      (defun org-repair-property-drawers ()
+        "Fix properties drawers in current buffer.
+       Ignore non Org buffers."
+        (interactive)
+        (when (eq major-mode 'org-mode)
+          (org-with-wide-buffer
+           (goto-char (point-min))
+           (let ((case-fold-search t)
+                 (inline-re (and (featurep 'org-inlinetask)
+                                 (concat (org-inlinetask-outline-regexp)
+                                         "END[ \t]*$"))))
+             (org-map-entries
+              (lambda ()
+                (unless (and inline-re (org-looking-at-p inline-re))
+                  (save-excursion
+                    (let ((end (save-excursion (outline-next-heading) (point))))
+                      (forward-line)
+                      (when (org-looking-at-p org-planning-line-re) (forward-line))
+                      (when (and (< (point) end)
+                                 (not (org-looking-at-p org-property-drawer-re))
+                                 (save-excursion
+                                   (and (re-search-forward org-property-drawer-re end t)
+                                        (eq (org-element-type
+                                             (save-match-data (org-element-at-point)))
+                                            'drawer))))
+                        (insert (delete-and-extract-region
+                                 (match-beginning 0)
+                                 (min (1+ (match-end 0)) end)))
+                        (unless (bolp) (insert "\n"))))))))))))
+    #+end_src
+
+** personal keymap and global remappings
+   
+   Idea taken from this article :
+   [[http://pragmaticemacs.com/emacs/use-your-digits-and-a-personal-key-map-for-super-shortcuts/]].
+   
+   #+begin_src emacs-lisp
+     (define-prefix-command 'asl-map)
+
+     ;; I want the key to be bound on <SPC> while on evil normal or motion state
+     (with-eval-after-load 'evil
+       (define-key evil-normal-state-map (kbd "SPC") 'asl-map)
+       (define-key evil-motion-state-map (kbd "SPC") 'asl-map))
+
+     (define-key asl-map ";" '("toggle-comment" . comment-or-uncomment-region))
+     (define-key asl-map "=" '("expand" . hydra-er/body))
+     (global-set-key (kbd "C-=") 'hydra-er/body)
+
+     (define-key asl-map "f" '("file"))
+     (define-key asl-map (kbd "ff") '("find-file" . counsel-find-file))
+     (define-key asl-map (kbd "fg") '("git-search" . counsel-git))
+     (define-key asl-map (kbd "fG") '("git-grep" . counsel-git-grep))
+     (define-key asl-map (kbd "fs") '("ag" . counsel-ag))
+     (define-key asl-map (kbd "fl") '("locate" . counsel-locate))
+
+     (define-key asl-map "g" '("git"))
+     (define-key asl-map (kbd "gs") '("status" . magit-status))
+
+     (define-key asl-map "o" '("org"))
+     (define-key asl-map (kbd "oa") '("agenda" . org-agenda))
+     (define-key asl-map (kbd "o'") '("edit-special" . org-edit-special))
+     (define-key asl-map (kbd "og") '("goto" . counsel-org-goto))
+     (define-key asl-map (kbd "oG") '("goto-all" . counsel-org-goto-all))
+     (define-key asl-map (kbd "os") '("src-block" . (org-insert-structure-template "src")))
+
+     (define-key asl-map "t" '("text"))
+     (define-key asl-map (kbd "ti") '("indent-buffer" . asl/indent-buffer))
+     (define-key asl-map (kbd "tz") '("zoom" . hydra-zoom/body))
+
+     (define-key asl-map "w" '("window"))
+     (define-key asl-map (kbd "wm") '("main-window" . delete-other-windows))
+   #+end_src
+
+** clipboard
+
+   Have better synergy between the system clipboard and emacs.
+   All the code taken as is from the [[https://pragmaticemacs.com/emacs]] blog.
+
+   #+begin_src emacs-lisp
+  ;; Whatever is selected by the mouse is copied to the clipboard
+  (setq mouse-drag-copy-region t)
+  ;; Save whatever’s in the current (system) clipboard before replacing
+  ;; it with the Emacs’ text.
+  ;; https://github.com/dakrone/eos/blob/master/eos.org
+  (setq save-interprogram-paste-before-kill t)
+   #+end_src
+   
+** fill column 
+   
+   I like having my fill column set at 102.
+
+   #+begin_src emacs-lisp
+     (setq-default fill-column 102)
+   #+end_src
+
+   Starting =auto-fill-mode= for all text buffers. If it turns out that's too much I'll update with a
+   list of major modes.
+
+   #+begin_src emacs-lisp
+     (add-hook 'text-mode-hook 'turn-on-auto-fill)
+   #+end_src
+
+** uniquify
+
+   #+begin_src emacs-lisp
+  (use-package uniquify
+    :config
+    (setq uniquify-buffer-name-style 'forward)
+    (setq uniquify-separator "/")
+    (setq uniquify-after-kill-buffer-p t)
+    (setq uniquify-ignore-buffers-re "^\\*"))
+   #+end_src
+   
+** backup files
+
+#+begin_src emacs-lisp
+  (setq backup-by-copying t
+        backup-directory-alist `(("." . "~/.bks"))
+        delete-old-versions t
+        kept-new-versions 6
+        kept-old-versions 2
+        version-control t)
+#+end_src
+
+* Text
+
+** counsel
+   
+   The addition of =counsel-yank-pop= to better pasting from the kill ring history thanks to an Irreal
+   post : [[http://irreal.org/blog/?p=5707]]
+   
+   #+begin_src emacs-lisp
+     (use-package counsel
+       :ensure t
+       :bind
+       (("M-y" . counsel-yank-pop)))
+   #+end_src
+
+** swiper
+
+   #+begin_src emacs-lisp
+     (use-package swiper
+       :ensure try
+       :config
+       (progn
+	 (ivy-mode 1)
+	 (setq ivy-use-virtual-buffers t)
+	 (global-set-key "\C-s" 'swiper)
+	 (global-set-key (kbd "C-c C-r") 'ivy-resume)
+	 (global-set-key (kbd "<f6>") 'ivy-resume)
+	 (global-set-key (kbd "M-x") 'counsel-M-x)
+	 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+	 (global-set-key (kbd "C-h f") 'counsel-describe-function)
+	 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
+	 (global-set-key (kbd "C-h s") 'counsel-info-lookup-symbol)
+	 (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)))
+   #+end_src
+
+** yasnippet
+
+   #+begin_src emacs-lisp
+     (use-package yasnippet
+       :ensure t
+       :init
+       (yas-global-mode 1))
+   #+end_src
+
+** expand-region
+
+   #+begin_src emacs-lisp
+     (use-package expand-region
+       :ensure t)
+
+     (with-eval-after-load 'hydra
+       (defhydra hydra-er (:hint nil)
+         "
+     ^^^^^^^^------------------------------------------------------------------
+     _=_: expand      _p_: in-pairs  _u_: url           _s_: org-code-block
+     _'_: in-quotes   _P_: out-pairs _c_: comment       _o_: org-parent
+     _\"_: out-quotes  _d_: defun     _t_: text-sentence ^ ^
+     "
+         ("'" er/mark-inside-quotes)
+         ("\"" er/mark-outside-quotes)
+         ("=" er/expand-region)
+         ("p" er/mark-inside-pairs)
+         ("P" er/mark-outside-pairs)
+         ("d" er/mark-defun)
+         ("u" er/mark-url)
+         ("s" er/mark-org-code-block)
+         ("o" er/mark-org-parent)
+         ("c" er/mark-comment)
+         ("t" er/mark-text-sentence)
+         ("q" nil "quit")))
+   #+end_src
+** autocomplete
+  
+   [[https://github.com/auto-complete/auto-complete/blob/master/doc/manual.md][Auto-Complete - User Manual]]
+
+   #+begin_src emacs-lisp
+     (use-package auto-complete
+       :ensure t
+       :init
+       (progn
+	 (ac-config-default)
+	 (global-auto-complete-mode t)))
+
+     (setq-default ac-use-menu-map t)
+     (setq ac-auto-show-menu 1)
+   #+end_src
+** smartparens
+   
+   Tutorial article : [[https://ebzzry.io/en/emacs-pairs/]].
+   Found the disabling of nonsensical pairs here : [[https://github.com/wasamasa/dotemacs/blob/master/init.org]].
+
+   #+begin_src emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode t)
+    (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
+    (sp-local-pair 'minibuffer-inactive-mode "`" nil :actions nil)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'emacs-lisp-mode "`" nil :actions nil)
+    (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'lisp-interaction-mode "`" nil :actions nil)
+    (sp-local-pair 'scheme-mode "'" nil :actions nil)
+    (sp-local-pair 'scheme-mode "`" nil :actions nil)
+    (sp-local-pair 'inferior-scheme-mode "'" nil :actions nil)
+    (sp-local-pair 'inferior-scheme-mode "`" nil :actions nil)
+    (sp-local-pair 'LaTeX-mode "\"" nil :actions nil)
+    (sp-local-pair 'LaTeX-mode "'" nil :actions nil)
+    (sp-local-pair 'LaTeX-mode "`" nil :actions nil)
+    (sp-local-pair 'latex-mode "\"" nil :actions nil)
+    (sp-local-pair 'latex-mode "'" nil :actions nil)
+    (sp-local-pair 'latex-mode "`" nil :actions nil)
+    (sp-local-pair 'TeX-mode "\"" nil :actions nil)
+    (sp-local-pair 'TeX-mode "'" nil :actions nil)
+    (sp-local-pair 'TeX-mode "`" nil :actions nil)
+    (sp-local-pair 'tex-mode "\"" nil :actions nil)
+    (sp-local-pair 'tex-mode "'" nil :actions nil)
+    (sp-local-pair 'tex-mode "`" nil :actions nil))
+   #+end_src
+** TODO multiple-cursors
+
+   [[https://github.com/magnars/multiple-cursors.el]]
+** TODO pdf-tools
+   
+   [[https://github.com/politza/pdf-tools]]
+   
+   #+begin_src emacs-lisp
+     (use-package pdf-tools
+       :ensure t
+       :config
+       (pdf-tools-install))
+   #+end_src
+
+
+* Org-mode
+
+  This org-mode configuration loads a local org-mode installation following the development branch on
+  github. It thus requires that the correct version of org-mode is loaded before this file is called to
+  avoid using the built-in version or any ohter installed melpa packages.
+
+  #+begin_src emacs-lisp
+    (setq org-startup-indented nil
+          org-M-RET-may-split-line nil
+          org-src-fontify-natively t)
+
+    (global-set-key "\C-cl" 'org-store-link)
+    (global-set-key "\C-ca" 'org-agenda)
+    (global-set-key "\C-cc" 'org-capture)
+    (global-set-key "\C-cb" 'org-iswitchb)
+
+    (setq org-agenda-files (quote ("~/Dropbox/org")))
+
+    (setq org-todo-keywords
+          (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+                  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+                  (sequence "RDV(r)" "|" "MISSED(m@/!)"))))
+
+    (setq org-todo-keyword-faces
+          (quote (("TODO" :foreground "red" :weight bold)
+                  ("NEXT" :foreground "blue" :weight bold)
+                  ("DONE" :foreground "forest green" :weight bold)
+                  ("WAITING" :foreground "orange" :weight bold)
+                  ("HOLD" :foreground "magenta" :weight bold)
+                  ("CANCELLED" :foreground "forest green" :weight bold)
+                  ("RDV" :foreground "red" :weight bold)
+                  ("MISSED" :foreground "orange" :weight bold))))
+
+    (setq org-use-fast-todo-selection t)
+    (setq org-use-fast-tag-selection t)
+    (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+
+    (setq org-todo-state-tags-triggers
+          (quote (("CANCELLED" ("CANCELLED" . t))
+                  ("WAITING" ("WAITING" . t))
+                  ("HOLD" ("WAITING") ("HOLD" . t))
+                  (done ("WAITING") ("HOLD"))
+                  ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                  ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                  ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+    (setq org-directory "~/Dropbox/org")
+
+    ;; Persist clocks across emacs sessions
+    (setq org-clock-persist 'history)
+    (org-clock-persistence-insinuate)
+
+    ;; ORG REFILE
+    (require 'org-mu4e) ; store org-mode links to messages
+    (setq org-mu4e-link-query-in-headers-mode nil)
+    
+    (setq org-default-notes-file "~/Dropbox/org/refile.org")
+
+    (setq org-capture-templates
+          (quote (("t" "todo" entry (file "~/Dropbox/org/refile.org")
+                   "* TODO %?\n%U\nfrom: %a\n")
+                  ("r" "respond" entry (file "~/Dropbox/org/refile.org")
+                   "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
+                  ("n" "note" entry (file "~/Dropbox/org/refile.org")
+                   "* %? :NOTE:\n%U\n%a\n")
+                  ("w" "org-protocol" entry (file "~/Dropbox/org/refile.org")
+                   "* TODO Review %c\n%U\n")
+                  ("R" "Rendez-vous" entry (file "~/Dropbox/org/rdv.org")
+                   "* %?\n%^t\n" :empty-lines 1)
+                  ("e" "Vocabulaire Espagnol" entry (file "~/Dropbox/org/esp.org")
+                   "* TODO %? : "))))
+
+    ;; Exclude DONE state tasks from refile targets
+    (defun bh/verify-refile-target ()
+      "Exclude todo keywords with a done state from refile targets."
+      (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+    (setq org-refile-target-verify-function 'bh/verify-refile-target)
+
+    (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
+
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((C . t)
+       (shell . t)
+       (emacs-lisp . t)
+       (python . t)))
+
+    (require 'org-habit)
+
+  #+end_src
+
+** org-gcal
+
+   Can be found here : [[https://github.com/myuhe/org-gcal.el]].
+   
+   As specified in [[https://github.com/myuhe/org-gcal.el/issues/78][Issue#78]], org-gcal does not support non-ASCII characters. I'm applying the
+   suggested workaround in the source code package.
+
+   #+begin_src emacs-lisp
+     ;; (use-package org-gcal
+     ;;   :ensure t
+     ;;   :config
+     ;;   (setq org-gcal-client-id "240505646452-n4jk4hvb3kenu6sb433pngsfpc1gom5c.apps.googleusercontent.com"
+     ;;         org-gcal-client-secret "te1C_c1twbiziq3CJBVMThzN"
+     ;;         org-gcal-file-alist '(("eldruz@gmail.com" . "~/Dropbox/org/rdv.org")))
+     ;;   (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) )))
+
+     ;; (add-to-list 'load-path "~/src/org-gcal")
+     ;; (require 'org-gcal)
+     ;; (setq org-gcal-client-id "240505646452-n4jk4hvb3kenu6sb433pngsfpc1gom5c.apps.googleusercontent.com"
+     ;;          org-gcal-client-secret "te1C_c1twbiziq3CJBVMThzN"
+     ;;          org-gcal-file-alist '(("eldruz@gmail.com" . "~/Dropbox/org/rdv.org")))
+     ;; (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+   #+end_src
+   
+   And it works. Though the file gets erased and rewritten everytime, which prevents me from having
+   some basic configuration for the file like filetags. I'll try and see if that's fixable.
+   I'm not sure I should bother, the code is 4 years old and does not seem to be maintained, the
+   issues keep piling up with no one to address them... It'll do for now.
+   
+** org-habit
+   
+   For some reason, if this variable is not set then the habits do not show at all. I might have to
+   investigate this a bit further if the habits clogging out my agenda view get too cumbersome, which
+   it might not since I can hide them by pressing ~K~ in the agenda view.
+
+   #+begin_src emacs-lisp
+     (with-eval-after-load 'org
+      (setq org-habit-show-habits-only-for-today nil))
+   #+end_src
+
+** org-caldav
+
+   Trying this out, maybe it works better than org-gcal.
+
+   #+begin_src emacs-lisp
+     (add-to-list 'load-path "~/src/org-caldav")
+     (require 'org-caldav)
+
+     (setq org-caldav-url 'google
+           org-caldav-calendar-id "eldruz@gmail.com"
+           org-caldav-inbox "~/Dropbox/org/caldav.org"
+           org-caldav-files '("~/Dropbox/org/casa_poncho.org" "~/Dropbox/org/hacking.org" "~/Dropbox/org/ae.org")
+           org-caldav-oauth2-client-id "240505646452-n4jk4hvb3kenu6sb433pngsfpc1gom5c.apps.googleusercontent.com"
+           org-caldav-oauth2-client-secret "te1C_c1twbiziq3CJBVMThzN"
+           plstore-cache-passphrase-for-symmetric-encryption t)
+   #+end_src
+
+* Langs
+
+** TODO python
+
+** TODO rust
+
+** flycheck
+
+   #+begin_src emacs-lisp
+     (use-package flycheck
+       :ensure t
+       :init
+       (global-flycheck-mode t))
+   #+end_src
+
+* Evil
+
+  Using development version of evil, located at : [[https://github.com/emacs-evil/evil]].
+
+  Making sure the dependencies are loaded as well :
+
+  #+begin_src emacs-lisp
+    (use-package undo-tree
+      :ensure t
+      :init
+      (global-undo-tree-mode))
+  #+end_src
+
+  Personal evil configuration points :
+  + replacing 'insert-mode with 'emacs-mode, to emulate the hybrid mode of spacemacs, which I suspect
+    does the same thing, I did not research it
+  + replacing "/" with swiper-like search
+
+  #+begin_src emacs-lisp
+    (add-to-list 'load-path "~/src/evil")
+    (require 'evil)
+    (evil-mode 1)
+
+    ;; Replacing the insert mode with the emacs mode
+    (setcdr evil-insert-state-map nil)
+    (define-key evil-insert-state-map
+      (read-kbd-macro evil-toggle-key) 'evil-emacs-state)
+
+    ;; Redefining ESC to get back to normal mode
+    (define-key evil-insert-state-map [escape] 'evil-normal-state)
+
+    (define-key evil-motion-state-map "/" 'swiper)
+  #+end_src
+
+** evil-escape
+
+   Escaping a lot of things with keystrokes.
+
+   #+begin_src emacs-lisp
+     (use-package evil-escape
+       :ensure t
+       :config
+       (progn 
+	 (setq-default evil-escape-key-sequence "fd")
+	 (setq-default evil-escape-delay 0.1))
+       :init
+       (evil-escape-mode))
+   #+end_src
+
+** evil-org
+
+   #+begin_src emacs-lisp
+  (use-package evil-org
+    :ensure t
+    :after org
+    :config
+    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'evil-org-mode-hook
+	      (lambda ()
+		(evil-org-set-key-theme))))
+   #+end_src
+
+** evil-smartparens
+   
+   Command usage link : [[https://github.com/expez/evil-smartparens]]
+
+   #+begin_src emacs-lisp
+  (use-package evil-smartparens
+    :ensure t
+    :after smartparens
+    :config
+    (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
+   #+end_src
+  
+** TODO evil-numbers
+   
+   Incrementing and decrementing numbers like vim C-x/a.
+   [[https://github.com/cofi/evil-numbers]]
+
+** evil-surround
+
+   [[https://github.com/emacs-evil/evil-surround]]
+
+   #+begin_src emacs-lisp
+     (use-package evil-surround
+       :ensure t
+       :after evil
+       :config
+       (global-evil-surround-mode 1))
+   #+end_src
+
+* Tools
+** magit
+   
+   Nice quick presentation of the principal functions :
+   [[https://masteringemacs.org/article/introduction-magit-emacs-mode-git]]
+
+   #+begin_src emacs-lisp
+   (use-package magit
+     :ensure t)
+
+   (global-set-key (kbd "C-x g") 'magit-status)
+   #+end_src
+** TODO projectile
+
+   [[https://cestlaz.github.io/posts/using-emacs-33-projectile-jump/]]
+   [[https://github.com/ericdanan/counsel-projectile]]
+** emacs-oauth
+
+   #+begin_src emacs-lisp
+     (use-package oauth2
+       :ensure t)
+   #+end_src
+
+* Packaging
+** try
+
+   #+begin_src emacs-lisp
+     (use-package try
+       :ensure t)
+   #+end_src
+   
+* Mail
+  
+
+  #+begin_src emacs-lisp
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+
+    (require 'mu4e)
+
+    ;; these are actually the defaults
+    (setq
+      mu4e-maildir       "~/Maildir"   ; top-level Maildir
+      mu4e-sent-folder   "/sent"       ; folder for sent messages
+      mu4e-drafts-folder "/drafts"     ; unfinished messages
+      mu4e-trash-folder  "/trash"      ; trashed messages
+      mu4e-refile-folder "/archive")   ; saved messages
+
+    (setq
+      mu4e-get-mail-command "offlineimap"   ; or fetchmail, or ...
+      mu4e-update-interval 300)             ; update every 5 minutes
+
+    ;; don't save messages to Sent Messages, Gmail/IMAP takes care of this
+    (setq mu4e-sent-messages-behavior 'delete)
+
+    ;; don't keep message buffers around
+    (setq message-kill-buffer-on-exit t)
+
+    (setq mu4e-contexts
+     `( ,(make-mu4e-context
+         :name "Gmail-eldruz"
+         :match-func (lambda (msg) (when msg
+           (string-prefix-p "/g-eldruz" (mu4e-message-field msg :maildir))))
+         :vars '(
+           (mu4e-trash-folder . "/g-eldruz/[Gmail].Trash")
+           (mu4e-refile-folder . "/g-eldruz/[Gmail].Archive")
+           ))
+       ))
+
+    ;; sending mail
+    (setq message-send-mail-function 'smtpmail-send-it
+         smtpmail-stream-type 'starttls
+         smtpmail-default-smtp-server "smtp.gmail.com"
+         smtpmail-smtp-server "smtp.gmail.com"
+         smtpmail-smtp-service 587)
+  #+end_src
+
+
+** TODO check how bookmarks work
+
+** TODO set up multiple accounts
+
+** TODO add a signature, different for each account
+* Tests
+
+  #+begin_src emacs-lisp
+    (defun pinentry-emacs (desc prompt ok error)
+      (let ((str (read-passwd (concat (replace-regexp-in-string "%22" "\"" (replace-regexp-in-string "%0A" "\n" desc)) prompt ": "))))
+        str))
+  #+end_src
+
