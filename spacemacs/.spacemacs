@@ -10,7 +10,7 @@ values."
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
-   dotspacemacs-distribution 'spacemacs
+   dotspacemacs-distribution 'spacemacs-base
    ;; Lazy installation of layers (i.e. layers are installed only when a file
    ;; with a supported type is opened). Possible values are `all', `unused'
    ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
@@ -31,6 +31,14 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     (spacemacs-editing :packages
+			avy
+			smartparens)
+     spacemacs-evil
+     spacemacs-org
+     spacemacs-editing-visual
+     (spacemacs-ui-visual :packages
+			  fill-column-indicator)
      csv
      elm
      helm
@@ -115,7 +123,7 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -327,77 +335,78 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq-default fill-column 102)
   (setq-default git-magit-status-fullscreen t)
-  (spacemacs/toggle-indent-guide-on)
-  (spacemacs/toggle-auto-fill-mode-on)
-  (spacemacs/toggle-fill-column-indicator-on)
+  (spacemacs/toggle-indent-guide-globally)
+  (spacemacs/toggle-auto-fill-mode)
+  (spacemacs/toggle-fill-column-indicator)
+
   ;;---------------------------------------
   ;; ORG CONFIG
   ;;---------------------------------------
-  (with-eval-after-load 'org
-    (setq org-agenda-files (quote ("~/Dropbox/org")))
+  ;; (require 'org-edna)
+  ;; (org-edna-load)
 
-    (setq org-todo-keywords
-          (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-                  (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
-                  (sequence "RDV(r)" "|" "MISSED(m@/!)" "DONE(d@/!)"))))
+  (setq org-agenda-files (quote ("~/Dropbox/org")))
 
-    (setq org-todo-keyword-faces
-          (quote (("TODO" :foreground "red" :weight bold)
-                  ("NEXT" :foreground "blue" :weight bold)
-                  ("DONE" :foreground "forest green" :weight bold)
-                  ("WAITING" :foreground "orange" :weight bold)
-                  ("HOLD" :foreground "magenta" :weight bold)
-                  ("CANCELLED" :foreground "forest green" :weight bold)
-                  ("RDV" :foreground "red" :weight bold)
-                  ("MISSED" :foreground "orange" :weight bold))))
+  (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")
+                (sequence "RDV(r)" "|" "MISSED(m@/!)" "DONE(d)"))))
 
-    (setq org-use-fast-todo-selection t)
-    (setq org-use-fast-tag-selection t)
-    (setq org-treat-S-cursor-todo-selection-as-state-change nil)
+  (setq org-todo-keyword-faces
+        (quote (("TODO" :foreground "red" :weight bold)
+                ("NEXT" :foreground "blue" :weight bold)
+                ("DONE" :foreground "forest green" :weight bold)
+                ("WAITING" :foreground "orange" :weight bold)
+                ("HOLD" :foreground "magenta" :weight bold)
+                ("CANCELLED" :foreground "forest green" :weight bold)
+                ("RDV" :foreground "red" :weight bold)
+                ("MISSED" :foreground "orange" :weight bold))))
 
-    (setq org-todo-state-tags-triggers
-          (quote (("CANCELLED" ("CANCELLED" . t))
-                  ("WAITING" ("WAITING" . t))
-                  ("HOLD" ("WAITING") ("HOLD" . t))
-                  (done ("WAITING") ("HOLD"))
-                  ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-                  ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-                  ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+  (setq org-use-fast-todo-selection t)
+  (setq org-use-fast-tag-selection t)
+  (setq org-treat-S-cursor-todo-selection-as-state-change nil)
 
-    (setq org-directory "~/Dropbox/org")
-    (setq org-default-notes-file "~/Dropbox/org/refile.org")
+  (setq org-todo-state-tags-triggers
+        (quote (("CANCELLED" ("CANCELLED" . t))
+                ("WAITING" ("WAITING" . t))
+                ("HOLD" ("WAITING") ("HOLD" . t))
+                (done ("WAITING") ("HOLD"))
+                ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-    (global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-directory "~/Dropbox/org")
+  (setq org-default-notes-file "~/Dropbox/org/refile.org")
 
-    (setq org-capture-templates
-          (quote (("t" "todo" entry (file "~/Dropbox/org/refile.org")
-                   "* TODO %?\n%U\n%a\n")
-                  ("r" "respond" entry (file "~/Dropbox/org/refile.org")
-                   "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
-                  ("n" "note" entry (file "~/Dropbox/org/refile.org")
-                   "* %? :NOTE:\n%U\n%a\n")
-                  ("j" "Journal" entry (file+datetree "~/Dropbox/org/diary.org")
-                   "* %?\n%U\n")
-                  ("w" "org-protocol" entry (file "~/Dropbox/org/refile.org")
-                   "* TODO Review %c\n%U\n")
-                  ("h" "Habit" entry (file "~/Dropbox/org/refile.org")
-                   "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+  (global-set-key (kbd "C-c c") 'org-capture)
+
+  (setq org-capture-templates
+        (quote (("t" "todo" entry (file "~/Dropbox/org/refile.org")
+                 "* TODO %?\n%U\n%a\n")
+                ("r" "respond" entry (file "~/Dropbox/org/refile.org")
+                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n")
+                ("n" "note" entry (file "~/Dropbox/org/refile.org")
+                 "* %? :NOTE:\n%U\n%a\n")
+                ("j" "Journal" entry (file+datetree "~/Dropbox/org/diary.org")
+                 "* %?\n%U\n")
+                ("w" "org-protocol" entry (file "~/Dropbox/org/refile.org")
+                 "* TODO Review %c\n%U\n")
+                ("h" "Habit" entry (file "~/Dropbox/org/refile.org")
+                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
                                         ; Exclude DONE state tasks from refile targets
-    (defun bh/verify-refile-target ()
-      "Exclude todo keywords with a done state from refile targets"
-      (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+  (defun bh/verify-refile-target ()
+    "Exclude todo keywords with a done state from refile targets"
+    (not (member (nth 2 (org-heading-components)) org-done-keywords)))
 
-    (setq org-refile-target-verify-function 'bh/verify-refile-target)
+  (setq org-refile-target-verify-function 'bh/verify-refile-target)
 
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((C . t)
-       (shell . t)
-       (emacs-lisp . t)
-       (python . t)
-       (rust . t)))
-    )
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((C . t)
+     (shell . t)
+     (emacs-lisp . t)
+     (python . t)))
   ;;---------------------------------------
   ;; END ORG CONFIG
   ;;---------------------------------------
@@ -410,24 +419,24 @@ you should place your code here."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (origami xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toml-mode toc-org symon string-inflection spaceline smeargle shell-pop restart-emacs rainbow-delimiters racer popwin persp-mode pcre2el password-generator paradox orgit org-projectile org-present org-pomodoro org-download org-bullets org-brain open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flycheck-rust flycheck-pos-tip flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elm-mode elisp-slime-nav editorconfig dumb-jump diff-hl define-word csv-mode company-statistics column-enforce-mode clean-aindent-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(company-tooltip-common
-   ((t (:inherit company-tooltip :weight bold :underline nil))))
- '(company-tooltip-common-selection
-   ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
-)
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(package-selected-packages
+     (quote
+      (origami xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toml-mode toc-org symon string-inflection spaceline smeargle shell-pop restart-emacs rainbow-delimiters racer popwin persp-mode pcre2el password-generator paradox orgit org-projectile org-present org-pomodoro org-download org-bullets org-brain open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flycheck-rust flycheck-pos-tip flycheck-elm flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elm-mode elisp-slime-nav editorconfig dumb-jump diff-hl define-word csv-mode company-statistics column-enforce-mode clean-aindent-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(company-tooltip-common
+     ((t (:inherit company-tooltip :weight bold :underline nil))))
+   '(company-tooltip-common-selection
+     ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+  )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -436,7 +445,7 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (vmd-mode flyspell-correct-helm flyspell-correct company-quickhelp auto-dictionary ox-twbs ox-reveal ox-gfm toml-mode racer origami flycheck-rust flycheck-elm elm-mode cargo rust-mode xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org spaceline smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump diff-hl define-word csv-mode company-statistics column-enforce-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (log4e gntp parent-mode request flx gitignore-mode fringe-helper git-gutter+ git-gutter seq pkg-info epl highlight let-alist iedit anzu goto-chg undo-tree dash s diminish pos-tip bind-map yasnippet packed async auto-complete popup bind-key smartparens evil flycheck company helm helm-core avy markdown-mode alert projectile magit git-commit with-editor hydra f magit-popup ghub org-category-capture org-plus-contrib org-edna elbank vmd-mode flyspell-correct-helm flyspell-correct company-quickhelp auto-dictionary ox-twbs ox-reveal ox-gfm toml-mode racer origami flycheck-rust flycheck-elm elm-mode cargo rust-mode xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org spaceline smeargle shell-pop restart-emacs rainbow-delimiters popwin persp-mode pcre2el paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md fuzzy flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump diff-hl define-word csv-mode company-statistics column-enforce-mode clean-aindent-mode auto-yasnippet auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
