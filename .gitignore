@@ -9,3 +9,5 @@ vim/.vim/bundle/
 vimprobable/.config/vimprobable/history
 vimprobable/.config/vimprobable/closed
 vimprobable/.config/vimprobable/cookies
+# temporary files
+*~
