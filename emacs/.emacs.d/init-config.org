@@ -574,10 +574,6 @@
 
 * Langs
 
-** TODO python
-
-** TODO rust
-
 ** flycheck
 
    #+begin_src emacs-lisp
@@ -585,6 +581,56 @@
        :ensure t
        :init
        (global-flycheck-mode t))
+   #+end_src
+
+** TODO python
+
+** TODO rust
+  
+   Installation from source since I intend to dive into the code to have a look at how lang modes are
+   implemented in emacs, and see if I can fix any pending issue while I'm at it.
+   
+   The configuration installs and configures:
+   + [[https://github.com/rust-lang/rust-mode][rust-mode]]
+   + [[https://github.com/racer-rust/emacs-racer][emacs-racer]]
+   + [[https://github.com/kwrooijen/cargo.el][cargo.el]]
+   + [[https://github.com/flycheck/flycheck-rust][flycheck-rust]]
+
+   #+begin_src emacs-lisp
+     ;; rust-mode
+     (add-to-list 'load-path "~/src/rust-mode/")
+     (autoload 'rust-mode "rust-mode" nil t)
+     (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+
+     (setq rust-format-on-save t)
+
+     ;; cargo.el
+     (use-package cargo
+       :ensure t
+       :hook (rust-mode cargo-minor-mode))
+
+     ;; flycheck-rust
+     (use-package flycheck-rust
+       :defer t)
+
+     (with-eval-after-load 'flycheck
+       (add-hook 'flycheck-hook-mode #'flycheck-rust-setup))
+
+     ;; emacs-racer
+     (use-package racer
+       :defer t
+       :after (company)
+       :bind ((:map rust-mode-map
+                    ("TAB" . #'company-indent-or-complete-common)))
+       :hook ((racer-mode eldoc-mode)))
+
+     (with-eval-after-load 'rust-mode
+       (add-hook 'rust-mode-hook #'racer-mode))
+
+     (with-eval-after-load 'company
+       (add-hook 'racer-mode-hook #'company-mode)
+       (setq company-tooltip-align-annotations t))
+
    #+end_src
 
 * Evil
