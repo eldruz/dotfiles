@@ -92,7 +92,7 @@
   
 ** hydra
 
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (use-package hydra
     :ensure t)
 
@@ -102,7 +102,7 @@
      ("g" text-scale-increase "in")
      ("l" text-scale-decrease "out"))
    )
-#+end_src
+   #+end_src
 
 * General
 
@@ -166,6 +166,13 @@
      (define-key asl-map ";" '("toggle-comment" . comment-or-uncomment-region))
      (define-key asl-map "=" '("expand" . hydra-er/body))
      (global-set-key (kbd "C-=") 'hydra-er/body)
+     (define-key asl-map (kbd "SPC") '("execute" . counsel-M-x))
+
+     (define-key asl-map "b" '("buffers"))
+     (define-key asl-map "bb" '("switch" . ivy-switch-buffer))
+     (define-key asl-map "bB" '("list" . list-buffers))
+     (define-key asl-map "bk" '("kill" . kill-buffer-if-not-modified))
+     (define-key asl-map "bo" '("org-switch" . org-switchb))
 
      (define-key asl-map "f" '("file"))
      (define-key asl-map (kbd "ff") '("find-file" . counsel-find-file))
@@ -177,11 +184,15 @@
      (define-key asl-map "g" '("git"))
      (define-key asl-map (kbd "gs") '("status" . magit-status))
 
+     (define-key asl-map "m" '("mail"))
+     (define-key asl-map (kbd "mm") '("mails" . mu4e))
+
      (define-key asl-map "o" '("org"))
-     (define-key asl-map (kbd "oa") '("agenda" . org-agenda))
      (define-key asl-map (kbd "o'") '("edit-special" . org-edit-special))
+     (define-key asl-map (kbd "oa") '("agenda" . org-agenda))
      (define-key asl-map (kbd "og") '("goto" . counsel-org-goto))
      (define-key asl-map (kbd "oG") '("goto-all" . counsel-org-goto-all))
+     (define-key asl-map (kbd "on") '("narrow" . org-narrow-to-element))
      (define-key asl-map (kbd "os") '("src-block" . (org-insert-structure-template "src")))
 
      (define-key asl-map "t" '("text"))
@@ -190,6 +201,8 @@
 
      (define-key asl-map "w" '("window"))
      (define-key asl-map (kbd "wm") '("main-window" . delete-other-windows))
+     (define-key asl-map (kbd "wo") '("switch-window" . ace-window))
+     (define-key asl-map (kbd "wk") '("kill-window" . kill-buffer-and-window))
    #+end_src
 
 ** clipboard
