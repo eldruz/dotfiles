@@ -765,45 +765,68 @@
 
     ;; these are actually the defaults
     (setq
-      mu4e-maildir       "~/Maildir"   ; top-level Maildir
-      mu4e-sent-folder   "/sent"       ; folder for sent messages
-      mu4e-drafts-folder "/drafts"     ; unfinished messages
-      mu4e-trash-folder  "/trash"      ; trashed messages
-      mu4e-refile-folder "/archive")   ; saved messages
+     mu4e-maildir       "~/Maildir"   ; top-level Maildir
+     mu4e-sent-folder   "/sent"       ; folder for sent messages
+     mu4e-drafts-folder "/drafts"     ; unfinished messages
+     mu4e-trash-folder  "/trash"      ; trashed messages
+     mu4e-refile-folder "/archive")   ; saved messages
 
     (setq
-      mu4e-get-mail-command "offlineimap"   ; or fetchmail, or ...
-      mu4e-update-interval 300)             ; update every 5 minutes
+     mu4e-get-mail-command "offlineimap"   ; or fetchmail, or ...
+     mu4e-update-interval 300)             ; update every 5 minutes
 
-    ;; don't save messages to Sent Messages, Gmail/IMAP takes care of this
-    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-sent-messages-behavior (lambda ()
+                                        (if (string= (message-sendmail-envelope-from) "eldruz@gmail.com")
+                                            'delete 'sent)))
 
     ;; don't keep message buffers around
     (setq message-kill-buffer-on-exit t)
 
+
+    (setq mu4e-context-policy 'ask)
     (setq mu4e-contexts
-     `( ,(make-mu4e-context
-         :name "Gmail-eldruz"
-         :match-func (lambda (msg) (when msg
-           (string-prefix-p "/g-eldruz" (mu4e-message-field msg :maildir))))
-         :vars '(
-           (mu4e-trash-folder . "/g-eldruz/[Gmail].Trash")
-           (mu4e-refile-folder . "/g-eldruz/[Gmail].Archive")
-           ))
-       ))
+          `( ,(make-mu4e-context
+               :name "eldruz"
+               :match-func (lambda (msg) (when msg
+                                           (string-prefix-p "/g-eldruz" (mu4e-message-field msg :maildir))))
+               :vars '(
+                       (mu4e-trash-folder . "/g-eldruz/[Gmail].Trash")
+                       (mu4e-refile-folder . "/g-eldruz/[Gmail].Archive")
+                       ))
+             ,(make-mu4e-context
+               :name "Gmail--legacy-asl"
+               :match-func (lambda (msg)
+                             (when msg (string-prefix-p "/g-asl" (mu4e-message-field msg :maildir))))
+               :vars '(
+                       (mu4e-trash-folder . "/g-asl/[Gmail].Trash")
+                       (mu4e-refile-folder . "/g-asl/[Gmail].Archive")
+                       ))
+             ,(make-mu4e-context
+               :name "Work"
+               :enter-func (lambda () (mu4e-message "Switch to the Work context"))
+               :match-func (lambda (msg)
+                             (when msg
+                               (mu4e-message-contact-field-matches
+                                msg
+                                :to "andres@saraosluna")))
+               :vars '(
+                       (mu4e-trash-folder . "/asl/trash")
+                       (mu4e-refile-folder . "/asl/archive")
+                       (user-mail-address . "andres@saraosluna.com")
+                       (user-full-name . "Andrés Saraos Luna")
+                       (mu4e-compose-signature . (concat "Andrés Saraos Luna"))))
+             ))
 
     ;; sending mail
     (setq message-send-mail-function 'smtpmail-send-it
-         smtpmail-stream-type 'starttls
-         smtpmail-default-smtp-server "smtp.gmail.com"
-         smtpmail-smtp-server "smtp.gmail.com"
-         smtpmail-smtp-service 587)
+          smtpmail-stream-type 'starttls
+          smtpmail-default-smtp-server "mail.gandi.net"
+          smtpmail-smtp-server "mail.gandi.net"
+          smtpmail-smtp-service 587)
   #+end_src
 
 
 ** TODO check how bookmarks work
-
-** TODO set up multiple accounts
 
 ** TODO add a signature, different for each account
 * Tests
