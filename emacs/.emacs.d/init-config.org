@@ -340,21 +340,34 @@
          ("t" er/mark-text-sentence)
          ("q" nil "quit")))
    #+end_src
-** autocomplete
+   
+** company-mode
+
+   #+begin_src emacs-lisp
+  (use-package company
+    :ensure t
+    :init (add-hook 'after-init-hook 'global-company-mode))
+   #+end_src
+
+** HOLD autocomplete                                                   :HOLD:
   
+   - State "HOLD"       from "TODO"       [2017-12-20 mer. 10:12] \\
+     Trying out company mode instead.
+     
    [[https://github.com/auto-complete/auto-complete/blob/master/doc/manual.md][Auto-Complete - User Manual]]
 
    #+begin_src emacs-lisp
-     (use-package auto-complete
-       :ensure t
-       :init
-       (progn
-	 (ac-config-default)
-	 (global-auto-complete-mode t)))
+     ;; (use-package auto-complete
+     ;;   :ensure t
+     ;;   :init
+     ;;   (progn
+     ;;     (ac-config-default)
+     ;;     (global-auto-complete-mode t)))
 
-     (setq-default ac-use-menu-map t)
-     (setq ac-auto-show-menu 1)
+     ;; (setq-default ac-use-menu-map t)
+     ;; (setq ac-auto-show-menu 1)
    #+end_src
+   
 ** smartparens
    
    Tutorial article : [[https://ebzzry.io/en/emacs-pairs/]].
@@ -389,6 +402,7 @@
     (sp-local-pair 'tex-mode "'" nil :actions nil)
     (sp-local-pair 'tex-mode "`" nil :actions nil))
    #+end_src
+   
 ** TODO multiple-cursors
 
    [[https://github.com/magnars/multiple-cursors.el]]
