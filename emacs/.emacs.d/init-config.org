@@ -247,14 +247,28 @@
    
 ** backup files
 
-#+begin_src emacs-lisp
+   #+begin_src emacs-lisp
   (setq backup-by-copying t
         backup-directory-alist `(("." . "~/.bks"))
         delete-old-versions t
         kept-new-versions 6
         kept-old-versions 2
         version-control t)
-#+end_src
+   #+end_src
+
+** browse-to-host
+
+   Redirect browsing events originating in emacs and running in a virtual machine to the host
+   browser.
+   
+   Ressources :
+   + [[https://www.emacswiki.org/emacs/BrowseUrl]]
+   + [[https://superuser.com/questions/140234/is-there-a-way-to-redirect-a-click-on-a-url-in-a-virtualbox-guest-to-open-in-t]]
+
+   #+begin_src emacs-lisp
+     (setq browse-url-browser-function 'browse-url-generic
+           browse-url-generic-program "open-url")
+   #+end_src
 
 * Text
 
