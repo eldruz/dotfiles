@@ -285,6 +285,7 @@
      (define-key asl-map "t" '("text"))
      (define-key asl-map (kbd "ti") '("indent-buffer" . asl/indent-buffer))
      (define-key asl-map (kbd "tz") '("zoom" . hydra-zoom/body))
+     (define-key asl-map "tm" '("multiple-cursors" . multiple-cursors-hydra/body))
 
      (define-key asl-map "w" '("window"))
      (define-key asl-map (kbd "wm") '("main-window" . delete-other-windows))
@@ -495,9 +496,15 @@
     (sp-local-pair 'tex-mode "`" nil :actions nil))
    #+end_src
    
-** TODO multiple-cursors
+** multiple-cursors
 
    [[https://github.com/magnars/multiple-cursors.el]]
+   
+   #+begin_src emacs-lisp
+     (use-package multiple-cursors
+       :ensure t)
+   #+end_src
+
 ** pdf-tools
    
    [[https://github.com/politza/pdf-tools]]
