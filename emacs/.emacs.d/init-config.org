@@ -195,6 +195,14 @@
      (define-key asl-map (kbd "on") '("narrow" . org-narrow-to-element))
      (define-key asl-map (kbd "os") '("src-block" . (org-insert-structure-template "src")))
 
+     (define-key asl-map "p" '("projectile" . projectile-command-map))
+     (define-key asl-map "pb" '("project-buffers" . counsel-projectile-switch-to-buffer))
+     (define-key asl-map "pf" '("find-file" . counsel-projectile-find-file))
+     (define-key asl-map "pg" '("find-file-at-point" . projectile-find-file-dwim))
+     (define-key asl-map "pm" '("commander" . projectile-commander))
+     (define-key asl-map "po" '("multi-occur" . projectile-multi-occur))
+     (define-key asl-map "pt" '("toggle-implem-test" . projectile-toggle-between-implementation-and-test))
+
      (define-key asl-map "t" '("text"))
      (define-key asl-map (kbd "ti") '("indent-buffer" . asl/indent-buffer))
      (define-key asl-map (kbd "tz") '("zoom" . hydra-zoom/body))
@@ -736,7 +744,7 @@
 
    (global-set-key (kbd "C-x g") 'magit-status)
    #+end_src
-** TODO projectile
+** projectile
 
    [[https://cestlaz.github.io/posts/using-emacs-33-projectile-jump/]]
    [[https://github.com/ericdanan/counsel-projectile]]
@@ -745,6 +753,20 @@
    #+begin_src emacs-lisp
      (use-package oauth2
        :ensure t)
+   #+end_src
+
+   
+   #+begin_src emacs-lisp
+     (use-package projectile
+       :ensure t
+       :config
+       (projectile-global-mode)
+     (setq projectile-completion-system 'ivy))
+
+     (use-package counsel-projectile
+       :ensure t
+       :config
+       (counsel-projectile-mode))
    #+end_src
 
 * Packaging
