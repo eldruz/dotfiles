@@ -684,7 +684,7 @@
 
 ** TODO python
 
-** TODO rust
+** rust
   
    Installation from source since I intend to dive into the code to have a look at how lang modes are
    implemented in emacs, and see if I can fix any pending issue while I'm at it.
